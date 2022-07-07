@@ -8,10 +8,47 @@
 #include "../inc/interpreter.hpp"
 #include "../inc/linter.hpp"
 
+/**
+ * Lexes, lints and interprets code.
+ */
+void HandleBFCode(std::string data)
+{
+    // Create a lexer struct.
+    BFLexer lexer((char*)data.c_str());
+
+    // Will store the tokens the lexer pulled.
+    std::vector<BFToken> tokens;
+
+    // Construct TOKEN_START and append to the tokens
+    tokens.push_back(BFToken(TOKEN_START, 0, 0, 0));
+
+    // Loop until we reach TOKEN_EOF.
+    for (;;)
+    {
+        // Scan the next token
+        BFToken token = lexer.ScanToken();
+
+        // Append the token to the vector
+        tokens.push_back(token);
+
+        // Check if we have reached EOF
+        if (token.token_type == TOKEN_END) break;
+    }
+
+    // Initialize the linter and run it.
+    BFLinter(tokens).Run();
+
+    // Initialize our interpreter object and run it.
+    BFInterpreter(tokens).Run();
+}
+
 int main(int argc, char *argv[])
 {
+    // Self promo yk ;)
     printf("0xKiwan's BrainFuck Interpreter\n");
 
+    // Will store the data we want to parse
+    std::string data;
 
     // Check if we are interpreting a brainfuck file
     if (argc > 1)
@@ -33,46 +70,13 @@ int main(int argc, char *argv[])
         std::ifstream fs(in_file);
 
         // Read file data into a string
-        std::string data((std::istreambuf_iterator<char>(fs)),
-            std::istreambuf_iterator<char>());
-
-        // Create a lexer struct.
-        BFLexer lexer((char*)data.c_str());
-
-        // Will store the tokens the lexer pulled.
-        std::vector<BFToken> tokens;
-
-        // Construct TOKEN_START and append to the tokens
-        tokens.push_back(
-            BFToken(
-                TOKEN_START, 0, 0, 0
-            )
+        std::string data(
+            (std::istreambuf_iterator<char>(fs)),
+            std::istreambuf_iterator<char>()
         );
 
-        // Loop until we reach TOKEN_EOF.
-        for (;;)
-        {
-            // Scan the next token
-            BFToken token = lexer.ScanToken();
-
-            // Append the token to the vector
-            tokens.push_back(token);
-
-            // Check if we have reached EOF
-            if (token.token_type == TOKEN_END) break;
-        }
-
-        // Initialize the linter
-        BFLinter linter(tokens);
-
-        // Run the linter on the tokens from the lexer.
-        linter.Run();
-
-        // Initialize our interpreter object
-        BFInterpreter interpreter(tokens);
-
-        // Run the tokens we got from the lexer.
-        interpreter.Run();
+        // Call HandleBFCode();
+        HandleBFCode(data);
     }
     else
     {
@@ -88,43 +92,8 @@ int main(int argc, char *argv[])
             // Capture the user's input
             if (fgets(line_buffer, sizeof(line_buffer), stdin) == NULL) continue;
 
-            // Create a lexer struct.
-            BFLexer lexer(line_buffer);
-
-            // Will store the tokens the lexer pulled.
-            std::vector<BFToken> tokens;
-
-            // Construct TOKEN_START and append to the tokens
-            tokens.push_back(
-                BFToken(
-                    TOKEN_START, 0, 0, 0
-                )
-            );
-
-            // Loop until we reach TOKEN_EOF.
-            for (;;)
-            {
-                // Scan the next token
-                BFToken token = lexer.ScanToken();
-
-                // Append the token to the vector
-                tokens.push_back(token);
-
-                // Check if we have reached EOF
-                if (token.token_type == TOKEN_END) break;
-            }
-
-            // Initialize the linter
-            BFLinter linter(tokens);
-
-            // Run the linter on the tokens from the lexer.
-            linter.Run();
-
-            // Initialize our interpreter object
-            BFInterpreter interpreter(tokens);
-
-            // Run the tokens we got from the lexer.
-            interpreter.Run();
+            // Handle the input
+            HandleBFCode(std::string(line_buffer));
         }
     }
 }
