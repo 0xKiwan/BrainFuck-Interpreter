@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 #include "../inc/lexer.hpp"
 #include "../inc/interpreter.hpp"
 #include "../inc/linter.hpp"
@@ -40,6 +41,43 @@ void HandleBFCode(std::string data)
 
     // Initialize our interpreter object and run it.
     BFInterpreter(tokens).Run();
+}
+
+/**
+ * Handles commands before the interpreter is run.
+ */
+bool HandleCommands(std::string command)
+{
+	// Convert the command to lowercase.
+	std::transform(command.begin(), command.end(), command.begin(), ::tolower);
+
+	// Check for the 'commands' command.
+    if (command == "commands\n") 
+    {
+		// Print out a list of commands.
+		printf("Commands:\n");
+		printf("clear - Clears the console\n");
+
+		// Return true.
+		return true;
+    }
+
+    // Check for the 'clear' command.
+	else if (command == "clear\n")
+	{
+		// Clear the console.
+		system("clear");
+        system("cls");
+
+		// Print original message
+        printf("0xKiwan's BrainFuck Interpreter\n");
+
+		// Return true.
+		return true;
+	}
+
+	// Return false.
+	return false;
 }
 
 int main(int argc, char *argv[])
@@ -91,9 +129,9 @@ int main(int argc, char *argv[])
 
             // Capture the user's input
             if (fgets(line_buffer, sizeof(line_buffer), stdin) == NULL) continue;
-
-            // Handle the input
-            HandleBFCode(std::string(line_buffer));
+            
+            // Handle user commands first, then handle brainfuck code.
+            if (!HandleCommands(std::string(line_buffer))) HandleBFCode(std::string(line_buffer));
         }
     }
 }

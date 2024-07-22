@@ -1,7 +1,2 @@
-﻿  interpreter.cpp
-  lexer.cpp
-  linter.cpp
-  main.cpp
-  token.cpp
-  Generating Code...
-  BrainFuckInterpreter.vcxproj -> C:\Users\awhal\Documents\GitHub\-BrainFuck--Interpreter\x64\Debug\BrainFuckInterpreter.exe
+﻿  main.cpp
+  BrainFuckInterpreter.vcxproj -> C:\Users\Admin\source\repos\BrainFuck-Interpreter\x64\Debug\BrainFuckInterpreter.exe
